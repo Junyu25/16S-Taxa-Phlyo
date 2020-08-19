@@ -17,7 +17,7 @@ from Bio.SeqRecord import SeqRecord
 
 """ Initialize environment """
 
-WD = os.path.expanduser("~/Projects/David Lab/Ind study projects/Seq trimming/Data/")
+#WD = os.path.expanduser("~/Projects/David Lab/Ind study projects/Seq trimming/Data/")
 # Order by fwd/rev pairs. Even indices are fwd, odd indices are rev.
 # Note that all rev sequences will be reverse-complemented to allow merging,
 # which means all indices for rev reads will be mirrored.

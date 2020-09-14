@@ -5,6 +5,7 @@
 
 
 import os
+import re
 import argparse
 import numpy as np
 # Biopython
@@ -291,19 +292,25 @@ filenames = []
 Flist = []
 Rlist = []
 
+# Check the "__***F__" pattern to get the strain name form the forward sequence file. If the strain name is too long, find the real strain name with a "DA***" pattern.
+
 for file in os.listdir(data):
-    if "__27F__" in file and file.endswith(".ab1"):
-        filename = file.split("__27F__")[0]
+    if re.search("_[\[_].*F[\]_][._]", file) and file.endswith(".ab1"):
+        filename = file.split(re.findall(r"_[\[_].*F[\]_][._]", file)[0])[0]
+        if len(filename)>10 and "DA" in filename:
+            filename = re.findall("DA.\d+",filename)[0]
         filenames.append(filename)
         #Fpath = os.path.join(data, file)
         #Rpath = os.path.join(data, file[:-10]+"_[1492R].ab1")
 
+# Find and list the forward and reverse sequence file for each strain name.
+
 for i in range(len(filenames)):
     for file in os.listdir(data):
         if filenames[i] in file and file.endswith(".ab1"):
-            if "__27F__" in file:
+            if re.search("_[\[_].*F[\]_][._]", file):
                 Flist.append(os.path.join(data, file))
-            elif "__1492R__" in file:
+            elif re.search("_[\[_].*R[\]_][._]", file):
                 Rlist.append(os.path.join(data, file))
 
 sequences = import_seqs(filenames, Flist, Rlist)

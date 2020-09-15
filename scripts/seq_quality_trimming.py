@@ -288,30 +288,65 @@ outputDir = os.path.abspath(args.OpDir)
 # Import fwd/rev reads
 #data = "/mnt/d/Lab/TaxaIdentification/data/16S-seq-result"
 data = inputDir
+
+FFileList = []
+RFileList = []
+
+# Find all forward sequence files and reverse sequence files
+for file in os.listdir(data):
+    filestr = re.sub("[-()[\]]", "_", file)
+    filestr = re.sub("\.", "__", filestr)
+    if re.search("__.*F__", filestr) and file.endswith(".ab1"):
+        FFileList.append(file)
+    elif re.search("__.*R__", filestr) and file.endswith(".ab1"):
+        RFileList.append(file)
+
+# Match the forward sequence files with reverse sequence files
 filenames = []
 Flist = []
 Rlist = []
+for FFile in FFileList:
+    for RFile in RFileList:
+        FFileStr = re.sub("[-()[\]]", "_", FFile)
+        FFileStr = re.sub("\.", "__", FFileStr)
+        RFileStr = re.sub("[-()[\]]", "_", RFile)
+        RFileStr = re.sub("\.", "__", RFileStr)
+        flag = 0
+        filename = []
+        filenamestr =[]
+        for i in range(len(re.split("__+",FFileStr))-1):
+            if re.split("__+",FFileStr)[i] == re.split("__+",RFileStr)[i] and re.split("__+",FFileStr)[i] != []:
+                flag = 1
+        if flag == 1:
+            for i in range(len(re.split("_+",FFileStr))-1):
+                if re.split("_+",FFileStr)[i] == re.split("_+",RFileStr)[i]:
+                    filename.append(re.split("_+",FFileStr)[i])
+            filenamestr = '_'.join(filename)
+            filenames.append(filenamestr)
+            Flist.append(os.path.join(data, FFile))
+            Rlist.append(os.path.join(data, RFile))
+
 
 # Check the "__***F__" pattern to get the strain name form the forward sequence file. If the strain name is too long, find the real strain name with a "DA***" pattern.
 
-for file in os.listdir(data):
-    if re.search("_[\[_].*F[\]_][._]", file) and file.endswith(".ab1"):
-        filename = file.split(re.findall(r"_[\[_].*F[\]_][._]", file)[0])[0]
-        if len(filename)>10 and "DA" in filename:
-            filename = re.findall("DA.\d+",filename)[0]
-        filenames.append(filename)
+#for file in os.listdir(data):
+#    if re.search("_[\[_].*F[\]_][._]", file) and file.endswith(".ab1"):
+#        filename = file.split(re.findall(r"_[\[_].*F[\]_][._]", file)[0])[0]
+#        if len(filename)>10 and "DA" in filename:
+#            filename = re.findall("DA.\d+",filename)[0]
+#        filenames.append(filename)
         #Fpath = os.path.join(data, file)
         #Rpath = os.path.join(data, file[:-10]+"_[1492R].ab1")
 
 # Find and list the forward and reverse sequence file for each strain name.
 
-for i in range(len(filenames)):
-    for file in os.listdir(data):
-        if filenames[i] in file and file.endswith(".ab1"):
-            if re.search("_[\[_].*F[\]_][._]", file):
-                Flist.append(os.path.join(data, file))
-            elif re.search("_[\[_].*R[\]_][._]", file):
-                Rlist.append(os.path.join(data, file))
+#for i in range(len(filenames)):
+#    for file in os.listdir(data):
+#        if filenames[i] in file and file.endswith(".ab1"):
+#            if re.search("_[\[_].*F[\]_][._]", file):
+#                Flist.append(os.path.join(data, file))
+#            elif re.search("_[\[_].*R[\]_][._]", file):
+#                Rlist.append(os.path.join(data, file))
 
 sequences = import_seqs(filenames, Flist, Rlist)
 write_fasta(sequences, os.path.join(outputDir, IMPORTED_FP), "original")

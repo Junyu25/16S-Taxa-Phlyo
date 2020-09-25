@@ -14,12 +14,17 @@ For basic usage of the sever, please refer to [LD Lab BioInfo Wiki](https://gith
 
 ### Data 
 
-For each strain, 4 sequencing result files are requested.
+For each strain, 4 sequencing result files should be named as follows. ```.seq``` files are not necessary.
 
-- ```StrainName_27F_*.ab1```
-- ```StrainName_27F_*.seq```
-- ```StrainName_1492R_*.ab1```
-- ```StrainName_1492R_*.seq```
+```StrainName__27F__*.ab1```
+
+```StrainName__27F__*.seq```
+
+```StrainName__1492R__*.ab1```
+
+```StrainName__1492R__*.seq```
+
+All the files should have the same and uniqe ```StrainName``` as the prefixion. The forward and reverse sequence should have the ```__***F__``` and ```__***R__``` in the filename respectively. You can also specify the ```StrainName``` with a ```metadata``` file.
 
 All sequence results can be put in one ```path```. For example,
 
@@ -67,7 +72,7 @@ python /home/LDlab/BioSoft/Scripts/16S-Taxa-Phlyo/processing-merged-seq.py ./Res
 
 #### Step 3: QIIME2 taxa classifier
 
-If you want to classify the strain by 16S sequence, replace the ```.fasta``` as the input file ```-i *3.fasta``` below.
+If you want to classify the strain by 16S sequence, replace the ```.fasta``` as the input file ```-i *.fasta``` below.
 
 ```bash
 python /home/LDlab/BioSoft/Scripts/16S-Taxa-Phlyo/16S-Taxa-Phylo-Pipeline.py 
